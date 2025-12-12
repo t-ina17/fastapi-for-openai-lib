@@ -1,3 +1,9 @@
+"""アプリ設定のPydanticモデル。
+
+環境変数（`.env` またはプロセス環境）から読み込み、
+OpenAI互換APIの動作とバックエンドの切替に関する設定を提供します。
+"""
+
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional

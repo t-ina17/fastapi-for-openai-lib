@@ -1,3 +1,9 @@
+"""生成プロバイダのベースインターフェース。
+
+各バックエンドはこの抽象インターフェースに従い、与えられたチャット
+メッセージから非同期にテキストトークンを生成・ストリーミングします。
+"""
+
 from typing import AsyncIterator, Dict, Any, Optional
 
 
@@ -14,4 +20,5 @@ class GenerationProvider:
         stop: Optional[list[str]] = None,
         **kwargs: Any,
     ) -> AsyncIterator[str]:
+        """非同期トークン生成のジェネレーターを返す抽象メソッド。"""
         raise NotImplementedError

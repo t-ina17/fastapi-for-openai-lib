@@ -1,3 +1,9 @@
+"""Transformers Provider
+
+Hugging Face Transformers を用いてローカル推論を行うプロバイダ。
+GPU/MPSがあれば自動利用し、未検出時はCPUでfloat32ロードにフォールバックします。
+"""
+
 from typing import AsyncIterator, Dict, Any, Optional
 import asyncio
 
@@ -11,6 +17,7 @@ class TransformersProvider(GenerationProvider):
         self._tokenizer = None
 
     def _ensure_loaded(self):
+        """モデル/トークナイザ/パイプラインの遅延ロードを行う。"""
         if self._pipeline is not None:
             return
         try:
@@ -63,6 +70,7 @@ class TransformersProvider(GenerationProvider):
             )
 
     def _build_prompt(self, messages: list[Dict[str, str]]) -> str:
+        """Chatテンプレートがあれば利用し、なければ簡易連結でプロンプト生成。"""
         tok = self._tokenizer
         if tok is not None and hasattr(tok, "apply_chat_template"):
             try:
@@ -133,6 +141,7 @@ class TransformersProvider(GenerationProvider):
 
 
 async def _aiter_streamer(streamer):
+    """BlockingなTextIteratorStreamerを非同期イテレーターへ橋渡しする。"""
     # Bridge blocking iterator to async iterator
     loop = asyncio.get_event_loop()
     while True:
@@ -143,6 +152,7 @@ async def _aiter_streamer(streamer):
 
 
 def _next_or_none(it):
+    """`next(it)`のStopIterationをNoneで表現するヘルパー。"""
     try:
         return next(it)
     except StopIteration:
